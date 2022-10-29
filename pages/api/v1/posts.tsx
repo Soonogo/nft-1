@@ -31,13 +31,7 @@ const Posts: NextApiHandler = async (req, res) => {
     // const a = users.filter((e)=>console.log(e.name?.slice(3,-3)))
     
     console.log(b);
-    const users = await prisma.user.findMany({
-        where: {
-          address: {
-            endsWith:b
-          }
-        },
-      })
+    const users = await prisma.user.findMany()
 
       console.log('---')
     console.log(users)
