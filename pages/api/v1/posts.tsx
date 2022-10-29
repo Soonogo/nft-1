@@ -11,35 +11,50 @@ const Posts: NextApiHandler = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-    if(req.method==="POST"){
 
+    if(req.method==="POST"){
+      console.log('post');
+      
     const r = req.body
-    const user = await prisma.user.create({
-        data: {
-          address: (r.address).toString(),
-          logo: ( r.logo_url).toString(),
-          featured: ( r.featured).toString(),
-        },
+    const user = await prisma.user.upsert({
+      where: {
+        address: (r.address).toString(),
+      },
+      update: {
+        logo: ( r.logo_url).toString(),
+        featured: ( r.featured).toString(),
+      },
+      create: {
+        address: (r.address).toString(),
+        logo: ( r.logo_url).toString(),
+        featured: ( r.featured).toString(),
+      },
       })
       console.log(user)
   
-  res.write(JSON.stringify({"name":"yes"}));
-}else{
+  res.write(JSON.stringify({"status":"yes"}));
+}else if(req.method==="GET"){
+  console.log('get');
+  
     console.log(req.query);
     const b = Object.keys( req.query)[0]
     // const users = await prisma.user.findMany()
     // const a = users.filter((e)=>console.log(e.name?.slice(3,-3)))
     
     console.log(b);
-    const users = await prisma.user.findMany()
+    const user = await prisma.user.findUnique({
+      where: {
+        address: b,
+      },
+    })
 
       console.log('---')
-    console.log(users)
-    res.write(JSON.stringify(users));
+       console.log(user)
+    res.write(JSON.stringify(user));
+}else{
+  res.write(JSON.stringify({"status":"error"}));
 }
 res.statusCode = 200;
-
 res.end()
-
 };
 export default Posts;
